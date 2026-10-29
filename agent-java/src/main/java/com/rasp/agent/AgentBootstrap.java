@@ -5,6 +5,7 @@ import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.instrument.Instrumentation;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,11 +23,7 @@ public class AgentBootstrap {
         System.out.println("[RASP] Starting Java Agent");
 
         new AgentBuilder.Default()
-            .ignore(ElementMatchers.nameStartsWith("java."))
-            .ignore(ElementMatchers.nameStartsWith("javax."))
-            .ignore(ElementMatchers.nameStartsWith("sun."))
-            .ignore(ElementMatchers.nameStartsWith("jdk."))
-            .type(ElementMatchers.named("java.sql.Statement"))
+            .type(ElementMatchers.isSubTypeOf(Statement.class))
             .transform((builder, typeDescription, classLoader, module, protectionDomain) ->
                 builder.visit(Advice.to(SqlStatementAdvice.class)
                     .on(ElementMatchers.named("execute")
@@ -35,10 +32,6 @@ public class AgentBootstrap {
             .installOn(instrumentation);
 
         new AgentBuilder.Default()
-            .ignore(ElementMatchers.nameStartsWith("java."))
-            .ignore(ElementMatchers.nameStartsWith("javax."))
-            .ignore(ElementMatchers.nameStartsWith("sun."))
-            .ignore(ElementMatchers.nameStartsWith("jdk."))
             .type(ElementMatchers.named("java.lang.Runtime"))
             .transform((builder, typeDescription, classLoader, module, protectionDomain) ->
                 builder.visit(Advice.to(RuntimeAdvice.class)
