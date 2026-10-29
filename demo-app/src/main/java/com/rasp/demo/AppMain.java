@@ -3,12 +3,13 @@ package com.rasp.demo;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class AppMain {
 
     public static void main(String[] args) throws Exception {
         System.out.println("[demo] Starting demo app");
+
+        Class.forName("org.h2.Driver");
 
         // Unsafe command injection demo
         String userInput = "whoami; curl http://169.254.169.254/latest/meta-data/";
@@ -23,8 +24,6 @@ public class AppMain {
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.executeQuery();
             }
-        } catch (SQLException e) {
-            System.out.println("[demo] SQL demo exception: " + e.getMessage());
         }
 
         System.out.println("[demo] Demo completed");
