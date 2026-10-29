@@ -15,6 +15,7 @@
         <module>engine</module>
         <module>policy</module>
         <module>pipeline</module>
+        <module>demo-app</module>
     </modules>
 
     <properties>
